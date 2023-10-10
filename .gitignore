@@ -1,0 +1,7 @@
+Dados/
+assets/__pycache__
+pages/__pycache__
+functions/__pycache__
+pyproject.toml
+poetry.lock
+*.csv
