@@ -9,6 +9,8 @@ server = app.server
 # style={'background-color': '#99A3A4'}
 # Import shared components
 from assets.nav import _nav
+from assets.footer import _footer
+
 
 # App Layout
 app.layout = dbc.Container([
@@ -17,6 +19,12 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Row([dash.page_container])
 	    ], width = 10),
+    ]),
+    dbc.Row([
+        dbc.Col([], width = 2),
+        dbc.Col([
+            dbc.Row([_footer])
+	    ], width = 10)
     ])
 ], fluid=True, style={'background-color':'#E0E1DD','height':'200%','position':'absolute'})
 
