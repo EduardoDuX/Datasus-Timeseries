@@ -95,7 +95,7 @@ layout = dbc.Container([
                 )
             )
         ])
-    ]),
+    ],style={'background-color':'#BDC3C7'}),
     
     dbc.Row([
         # Grafico

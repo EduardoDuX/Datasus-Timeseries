@@ -6,14 +6,14 @@ app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP,
 	   suppress_callback_exceptions=True, prevent_initial_callbacks=True)
 server = app.server
 
-
+# style={'background-color': '#99A3A4'}
 # Import shared components
 from assets.nav import _nav
 
 # App Layout
 app.layout = dbc.Container([
 	dbc.Row([
-        dbc.Col([_nav], width = 2),
+        dbc.Col([_nav], width = 2, style={'background-color': '#778DA9'}),
         dbc.Col([
             dbc.Row([dash.page_container])
 	    ], width = 10),
@@ -23,4 +23,4 @@ app.layout = dbc.Container([
 
 # Run App
 if __name__ == '__main__':
-	app.run_server(debug=False, host='0.0.0.0')
+	app.run_server(debug=True, host='0.0.0.0')

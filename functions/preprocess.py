@@ -11,9 +11,7 @@ def preprocess_SINAN(df, agrupamento):
 
 def preprocess_SIM(df, agrupamento):
     df2 = df.copy()
-    
-    df2 = df2.loc[df2['DATA'].apply(lambda x: len(str(x))) > 8]
-    
+        
     if agrupamento == 'Anual':
         df2[agrupamento] = df2['DATA'].apply(lambda x: x[:4])
     elif agrupamento == 'Mensal':
