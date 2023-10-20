@@ -7,6 +7,8 @@ from assets.select_data import _select_data
 from functions.sazonalidade import plot_seasonality
 from functions.subseries import plot_subseries
 from functions.preprocess import *
+from functions.linear import linear
+
 
 from scipy import stats
 from scipy.optimize import curve_fit
@@ -29,133 +31,298 @@ layout = dbc.Container([
     ]),
 
     # Seleciona dados
-    dbc.Row(_select_data),
-
     dbc.Row([
+        dbc.Col([
+            
+            dbc.Row(
+                html.H4("Base",
+                        style={'padding':20})
+            ),
+            dbc.Row([
+           
+                dcc.RadioItems(
+                    list(dataset.keys()),
+                    id='bases',
+                    persistence=True, 
+                    persistence_type='session',
+                    style={'padding':20},
+                    # inline=True,
+                    value='SINAN',
+                    inputStyle={'margin-left': "20px",
+                                'margin-right':'3px'}
+                    )
+                
+            ])
+            
+        ]),
+        
+        dbc.Col([
+            dbc.Row(
+                html.H4("Sub-Base",
+                        style={'padding':20})
+            ),
+            
+            dbc.Row([
+                dcc.Dropdown(options=[],
+                    id='dataset',
+                    value = 'DOEXT',
+                    persistence='bases', 
+                    persistence_type='session',
+                    placeholder = 'Escolha uma Tabela',
+                    searchable=False)
+            ])
+        ]),
+        
+        dbc.Col([
+            dbc.Row(
+                html.H4('Selecione o tipo de gráfico',
+                    style={'padding':20}
+                )
+            ),
+            
+            dbc.Row(
+                dcc.Dropdown(
+                    ['Temporal','Sazonalidade','Sub-Séries','Multi-sazonalidade','Defasagens'],
+                    value='Temporal',
+                    id='plot_type',
+                    persistence=True,
+                    persistence_type='session', 
+                    placeholder = 'Tipo de gráfico',
+                    searchable=False
+                )
+            )
+        ])
+    ]),
+    
+    dbc.Row(
+        id='filters'    
+    ),
+
+    dbc.Row(
         # Grafico
-        dbc.Col(
             dcc.Loading(
                     id='plot',
                     type='circle'
                 ),
-            width=9
-        ),
+            # width=9
+        )
 
-        # Filtros
-        dbc.Col([
-            html.H4('Selecione os filtros',
-                style={'padding':20}
-            ),
-            dcc.RadioItems(
-                    ['Diario', 'Mensal', 'Anual'],
-                    id='agrupamento',
-                    persistence=True, 
-                    persistence_type='session',
-                    style={'padding':20},
-                    inline=True,
-                    value='Mensal',
-                    inputStyle={'margin-left': "20px",
-                                'margin-right':'3px'}
-                    ),
+    #     # Filtros
+    #     dbc.Col([
+    #         html.H4('Selecione os filtros',
+    #             style={'padding':20}
+    #         ),
+    #         dcc.RadioItems(
+    #                 ['Diario', 'Mensal', 'Anual'],
+    #                 id='agrupamento',
+    #                 persistence=True, 
+    #                 persistence_type='session',
+    #                 style={'padding':20},
+    #                 inline=True,
+    #                 value='Mensal',
+    #                 inputStyle={'margin-left': "20px",
+    #                             'margin-right':'3px'}
+    #                 ),
 
-            dcc.Dropdown(
-                # filtro_ano,
-                list(range(1996,2022)),
-                id='anos',
-                persistence=True, 
-                persistence_type='session', 
-                placeholder = 'Selecione um ano',
-                multi=True,
-                searchable=False
-            ),
-                    
-            html.H4('Selecione o tipo de gráfico',
-                style={'padding':20}
-            ),
-            
-            dcc.Dropdown(
-                ['Temporal','Sazonalidade','Sub-Séries','Multi-sazonalidade','Defasagens'],
-                value='Temporal',
-                id='plot_type',
-                persistence=True,
-                persistence_type='session', 
-                placeholder = 'Tipo de gráfico',
-                searchable=False
-            )
-        ]),
-    ]),
+    #         dcc.Dropdown(
+    #             # filtro_ano,
+    #             list(range(1996,2022)),
+    #             id='anos',
+    #             persistence=True, 
+    #             persistence_type='session', 
+    #             placeholder = 'Selecione um ano',
+    #             multi=True,
+    #             searchable=False
+    #         )
+    #     ]),
+    # ]),
 
-    dbc.Row(dcc.RadioItems(
-                    ['Nenhum', '1a Diferenciação', '2a Diferenciação', 'Box-Cox', 'Média Móvel', 'Tendência'],
-                    value = 'Nenhum',
-                    id='transformacoes',
-                    persistence=True, 
-                    persistence_type='session',
-                    inline=True,
-                    inputStyle={'margin-left': "20px",
-                                'margin-right':'3px'}
-                    )),
-    dbc.Row(dcc.Input(
-                id='box-cox',
-                type='text',
-                # value = 1,
-                placeholder = 'Selecionar Lambda'
-            ) )
+    # dbc.Row(dcc.RadioItems(
+    #                 ['Nenhum', '1a Diferenciação', '2a Diferenciação', 'Box-Cox_linear', 'Média Móvel', 'Tendência'],
+    #                 value = 'Nenhum',
+    #                 id='transformacoes_linear',
+    #                 persistence=True, 
+    #                 persistence_type='session',
+    #                 inline=True,
+    #                 inputStyle={'margin-left': "20px",
+    #                             'margin-right':'3px'}
+    #                 )),
+    # dbc.Row(dcc.Input(
+    #             id='box-cox_linear',
+    #             type='text',
+    #             # value = 1,
+    #             placeholder = 'Selecionar Lambda'
+    #         ) )
 ])
+
+@callback(
+    Output(component_id='filters', component_property='children'),
+    Input(component_id='plot_type', component_property='value')
+)
+def filters_function(plot_type):
+    child = None
+    if plot_type == 'Temporal':
+        child =  [
+                dbc.Row([
+                    dbc.Col([
+                        html.H4('Agrupamento',
+                            style={'padding':20}
+                        ),
+                        dcc.RadioItems(
+                            ['Diario', 'Mensal', 'Anual'],
+                            id='agrupamento_linear',
+                            persistence=True, 
+                            persistence_type='session',
+                            style={'padding':20},
+                            inline=True,
+                            value='Mensal',
+                            inputStyle={'margin-left': "20px",
+                                        'margin-right':'3px'}
+                            ),
+                    ]),
+                    
+                    dbc.Col([
+                        html.H4('Anos',
+                        style={'padding':20}
+                        ),
+                        
+                        dcc.Dropdown(
+                        # filtro_ano,
+                        list(range(1996,2022)),
+                        id='anos_linear',
+                        persistence=True, 
+                        persistence_type='session', 
+                        placeholder = 'Selecione um ano',
+                        multi=True,
+                        searchable=False
+                        )
+                    ]),
+                    
+                    dbc.Col([
+                        html.H4('Funções',
+                        style={'padding':20}
+                        ),
+                        
+                        dcc.RadioItems(
+                            ['Nenhum', '1a Diferenciação', '2a Diferenciação', 'Box-Cox', 'Média Móvel', 'Tendência'],
+                            value = 'Nenhum',
+                            id='transformacoes_linear',
+                            persistence=True, 
+                            persistence_type='session',
+                            # inline=True,
+                            inputStyle={'margin-left': "20px",
+                                        'margin-right':'3px'}
+                        ),
+                        
+                    ]),
+                    
+                    dbc.Col([
+                        html.H4('Valor Lambda',
+                        style={'padding':20}
+                        ),
+                        
+                        dcc.Input(
+                            id='box-cox_linear',
+                            type='text',
+                            # value = 1,
+                            placeholder = 'Selecionar Lambda'
+                        )
+                    ])
+                ]),
+                
+                dbc.Row([
+                    dbc.Col(
+                        id= 'eixo_sazonalidade'
+                    ),
+                    dbc.Col(
+                        id= 'agrupamento_sazonalidade'
+                    )
+                ])
+            ]
+    elif plot_type == 'Sazonalidade':
+         child =  [
+                dbc.Col([
+                    html.H4('Eixo X',
+                        style={'padding':20}
+                    ),
+                    dcc.RadioItems(
+                        ['Dia', 'Mes', 'Ano'],
+                        id='eixo_sazonalidade',
+                        persistence=True, 
+                        persistence_type='session',
+                        style={'padding':20},
+                        inline=True,
+                        value='Mes',
+                        inputStyle={'margin-left': "20px",
+                                    'margin-right':'3px'}
+                        )
+                ]),
+                
+                dbc.Col([
+                    html.H4('Agrupamento',
+                    style={'padding':20}
+                    ),
+                    
+                    dcc.RadioItems(
+                        ['Dia', 'Mes', 'Ano'],
+                        id='agrupamento_sazonalidade',
+                        persistence=True, 
+                        persistence_type='session',
+                        style={'padding':20},
+                        inline=True,
+                        value='Ano',
+                        inputStyle={'margin-left': "20px",
+                                    'margin-right':'3px'}
+                        )
+                ]),
+                dbc.Col([
+                    dbc.Row(
+                        id= 'agrupamento_linear'
+                    ),
+                    dbc.Row(
+                        id= 'anos_linear'
+                    ),
+                    dbc.Row(
+                        id= 'transformacoes_linear'
+                    ),
+                    dbc.Row(
+                        id= 'box-cox_linear'
+                    ),
+                ])
+            ]
+    return child
+
 
 @callback(
     Output(component_id='plot', component_property='children'),
     Input(component_id='bases', component_property='value'),
     Input(component_id='dataset', component_property='value'),
-    Input(component_id='anos', component_property='value'),
-    Input(component_id='agrupamento', component_property='value'),
     Input(component_id='plot_type', component_property='value'),
-    Input(component_id='transformacoes', component_property='value'),
-    Input(component_id='box-cox', component_property='value')
+    Input(component_id='agrupamento_linear', component_property='value'),
+    Input(component_id='anos_linear', component_property='value'),
+    Input(component_id='transformacoes_linear', component_property='value'),
+    Input(component_id='box-cox_linear', component_property='value'),
+    Input(component_id='eixo_sazonalidade', component_property='value'),
+    Input(component_id='agrupamento_sazonalidade', component_property='value')
 )
-def data_plot(base_chosen, table, ano, agrupamento, plot_type, transformacao, lambda_box_cox):
+def data_plot(base_chosen, sub_base, plot_type, agrupamento_linear = None, ano_linear = None, transformacao_linear = None, lambda_box_cox_linear = None, eixo_sazonalidade = None, agrupamento_sazonalidade = None):
 
     # Resolvendo bug tipo de dado
-    if type(table) == list:
-        df = dataset[base_chosen][table[0]]
+    if type(sub_base) == list:
+        df = dataset[base_chosen][sub_base[0]]
     else:
-        df = dataset[base_chosen][table]
+        df = dataset[base_chosen][sub_base]
 
-    # Filtra os dados
-    if ano != []:
-        df_ano = df[df['DATA'].apply(lambda x: int(x[:4])).isin(ano)].copy()
-    else:
-        df_ano = df.copy()
-
-    # Preprocessa os dados
-    if base_chosen == 'SINAN':
-        df_process = preprocess_SINAN(df_ano, agrupamento)
-    elif base_chosen == 'SIM':
-        df_process = preprocess_SIM(df_ano, agrupamento)    
-
-    if transformacao != 'Nenhum':
-        if transformacao == 'Box-Cox' and lambda_box_cox != None:
-            df_process['Casos'] = stats.boxcox(df_process['Casos'], lmbda = int(lambda_box_cox))
-
-        elif transformacao == 'Tendência':
-            tam = len(df_process['Casos'])
-            lista = np.array(list(range(1,tam+1)))
-            X = np.column_stack(lista)
-            X = X.reshape([tam,1])
-
-            Xm = X ** np.arange(0,5)
-
-            model = sm.OLS(df_process['Casos'],Xm)
-            results = model.fit()
-
-            df_process['Casos'] = df_process['Casos']-results.predict(Xm)
-
+    df = df.loc[df['DATA'].apply(lambda x: len(str(x))) > 8]
     # Cria figura
     if plot_type == 'Sazonalidade':
-        return dcc.Graph(figure = plot_seasonality(df_process,'Data','Casos','b', 'Y', title='Gráfico de Sazonalidade'))
+        if  eixo_sazonalidade == agrupamento_sazonalidade:
+            return html.H4('Eixo e Agrupamento não podem ser iguais')
+        return dcc.Graph(figure = plot_seasonality(df,eixo_sazonalidade, agrupamento_sazonalidade))
     
     elif plot_type == 'Temporal':
-        return dcc.Graph(figure = px.line(data_frame=df_process, x='Data', y='Casos', title=f'Gráfico por tempo'))
+        return dcc.Graph(figure = linear(df, base_chosen, ano_linear, agrupamento_linear, transformacao_linear, lambda_box_cox_linear))
     
     elif plot_type == 'Sub-Séries':
-        return dcc.Graph(figure = plot_subseries(df_process,'Data','Casos',title='Gráfico de Sub-Séries'))
+        True
+        # return dcc.Graph(figure = plot_subseries(df_process,'Data','Casos',title='Gráfico de Sub-Séries'))
