@@ -6,7 +6,7 @@ import statsmodels.api as sm
 import plotly.express as px
 
 def linear(df, base_chosen, ano, agrupamento, transformacao, lambda_box_cox):
-    if ano != []:
+    if ano != [] and ano != None:
         df_ano = df[df['DATA'].apply(lambda x: int(x[:4])).isin(ano)].copy()
     else:
         df_ano = df.copy()
