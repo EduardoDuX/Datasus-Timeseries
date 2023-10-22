@@ -19,7 +19,7 @@ default_style = {
 
 
 _nav = dbc.Container([
-	dbc.Row([dbc.Col([html.H1(['Análise Temporal Datasus'], className='app-brand', style={'marginTop': 25})], width = 3)
+	dbc.Row([dbc.Col([html.H1(['Análise Temporal Datasus'], className='app-brand', style={'margin-top': 25, 'margin-bottom': 15})], width = 3)
 	]),
 	dbc.Row([
         dbc.Col([
@@ -29,10 +29,15 @@ _nav = dbc.Container([
                     dbc.NavLink(html.Img(src='https://github.com/ciziks/datasus-analysis/blob/main/assets/Icons/vetor_grafico.png?raw=true'), id='analise_button')
                     ],
                     vertical=True, pills=True, class_name='my-nav', horizontal='start')
-                ], width = 4),
-        
+                ], width = 3),
+
         dbc.Col(
-                id = 'test', width = 4, align='center'
+            html.Div(style={'width': '1px', 'background-color': 'black', 'height': '100%', 'margin-left': '13px'}),
+            width = 1
+        ),
+
+        dbc.Col(
+                id = 'sub_menu', width = 4, align='center'
                 )
     ], style = default_style)
         
@@ -40,7 +45,7 @@ _nav = dbc.Container([
 )
 
 @callback(
-    Output(component_id='test', component_property='children'),
+    Output(component_id='sub_menu', component_property='children'),
     Output(component_id='home_button', component_property='style'),
     Output(component_id='analise_button', component_property='style'),
     Input(component_id='home_button', component_property='n_clicks_timestamp'),

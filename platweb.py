@@ -1,9 +1,12 @@
 from dash import Dash
 import dash_bootstrap_components as dbc
 import dash
+from dash import html
+from dash_extensions.enrich import DashProxy, ServersideOutputTransform
 
-app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
-	   suppress_callback_exceptions=True, prevent_initial_callbacks=True)
+
+app = DashProxy(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
+	   suppress_callback_exceptions=True, prevent_initial_callbacks=True, transforms=[ServersideOutputTransform()])
 server = app.server
 
 # style={'background-color': '#99A3A4'}
@@ -19,14 +22,11 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Row([dash.page_container])
 	    ], width = 10),
-    ]),
+    ], style={'height': '100%'}),
     dbc.Row([
-        dbc.Col([], width = 2),
-        dbc.Col([
-            dbc.Row([_footer])
-	    ], width = 10)
-    ])
-], fluid=True, style={'background-color':'#E0E1DD','height':'200%','position':'absolute'})
+        _footer   
+    ], style={'height': '10%'})
+], fluid=True, style={'background-color':'#E0E1DD','position':'absolute'})
 
 
 # Run App
