@@ -149,16 +149,21 @@ def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = 
             return dcc.Graph(figure = linear(df, base_chosen, ano_linear, agrupamento_linear, transformacao_linear, lambda_box_cox_linear))
         
         elif plot_type == 'Sub-Séries':
-            True
-            # return dcc.Graph(figure = plot_subseries(df_process,'Data','Casos',title='Gráfico de Sub-Séries'))
+            pass
+
+        elif plot_type == 'Multi-sazonalidade':
+            pass
+
+        elif plot_type == 'Defasagens':
+            pass
+
 
 @callback(
     Output(component_id='box-cox_linear', component_property='disabled'),
     Input(component_id='transformacoes_linear', component_property='value')
 )
-
 def input_activation(transformacao):
-    if transformacao == 'Box-Cox':
+    if transformacao == 'Box-Cox' or transformacao == 'Média Móvel':
         return False
     else:
         return True
