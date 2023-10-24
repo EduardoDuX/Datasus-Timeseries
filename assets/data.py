@@ -14,7 +14,7 @@ dataset = {
             'DO': None,
             'DOMAT': None,
             'DOFET': None,
-            'DOEXT': pd.read_csv('./assets/Dados/SIM-DOEXT.csv')
+            'DOEXT': pd.read_csv('Datasus-Timeseries/assets/Dados/SIM-DOEXT.csv')
         }
                 
 }

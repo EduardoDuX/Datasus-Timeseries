@@ -25,8 +25,8 @@ _nav = dbc.Container([
         dbc.Col([
                 dbc.Nav(
                 [
-                    dbc.NavLink(html.Img(src='https://github.com/ciziks/datasus-analysis/blob/main/assets/Icons/vetor_home.png?raw=true'), id='home_button'),
-                    dbc.NavLink(html.Img(src='https://github.com/ciziks/datasus-analysis/blob/main/assets/Icons/vetor_grafico.png?raw=true'), id='analise_button')
+                    dbc.NavLink(html.Img(src='https://github.com/EduardoDuX/Datasus-Timeseries/blob/main/assets/Icons/vetor_home.png?raw=true'), id='home_button'),
+                    dbc.NavLink(html.Img(src='https://github.com/EduardoDuX/Datasus-Timeseries/blob/main/assets/Icons/vetor_grafico.png?raw=true'), id='analise_button')
                     ],
                     vertical=True, pills=True, class_name='my-nav', horizontal='start')
                 ], width = 3),
@@ -71,7 +71,7 @@ def secondary_menu(n_clicks_timestamp1, n_clicks_timestamp2):
         menu = dbc.Nav(
                 [
                     dbc.NavLink('Exploração', href='/exploracao', style= default_style, id= 'exploracao'),
-                    dbc.NavLink('Correlações', href='/correlacao', style= default_style, id= 'correlacoes'),
+                    # dbc.NavLink('Correlações', href='/correlacao', style= default_style, id= 'correlacoes'),
                     dbc.NavLink('Modelagem', href='/modelagem', style= default_style, id= 'modelagem'),
                     dbc.NavLink('Diagnóstico', href='/diagnostico', style= default_style, id= 'diagnostico'),
                     dbc.NavLink('Predição', href='/predicao', style= default_style, id= 'predicao')
@@ -113,12 +113,12 @@ def style_home_adjust(home = None, dados = None):
 
 @callback(
     Output(component_id='exploracao', component_property='style'),
-    Output(component_id='correlacoes', component_property='style'),
+    # Output(component_id='correlacoes', component_property='style'),
     Output(component_id='modelagem', component_property='style'),
     Output(component_id='diagnostico', component_property='style'),
     Output(component_id='predicao', component_property='style'),
     Input(component_id='exploracao', component_property='n_clicks_timestamp'),
-    Input(component_id='correlacoes', component_property='n_clicks_timestamp'),
+    # Input(component_id='correlacoes', component_property='n_clicks_timestamp'),
     Input(component_id='modelagem', component_property='n_clicks_timestamp'),
     Input(component_id='diagnostico', component_property='n_clicks_timestamp'),
     Input(component_id='predicao', component_property='n_clicks_timestamp')
@@ -128,7 +128,7 @@ def style_analise_adjust(exploracao = None, correlacoes = None, modelagem = None
 
     timestamps = {
         'exploracao': exploracao,
-        'correlacoes': correlacoes,
+        # 'correlacoes': correlacoes,
         'modelagem': modelagem,
         'diagnostico': diagnostico,
         'predicao': predicao
@@ -136,7 +136,7 @@ def style_analise_adjust(exploracao = None, correlacoes = None, modelagem = None
     
     styles = {
         'exploracao': default_style,
-        'correlacoes': default_style,
+        # 'correlacoes': default_style,
         'modelagem': default_style,
         'diagnostico': default_style,
         'predicao': default_style
@@ -151,5 +151,5 @@ def style_analise_adjust(exploracao = None, correlacoes = None, modelagem = None
     
     if val > 0:
         styles[key] = menu_style
-    return styles['exploracao'], styles['correlacoes'], styles['modelagem'], styles['diagnostico'], styles['predicao']
+    return styles['exploracao'], styles['modelagem'], styles['diagnostico'], styles['predicao']
     

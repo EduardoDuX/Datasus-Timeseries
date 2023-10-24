@@ -6,11 +6,14 @@ from assets.data import dataset
 from assets.select_data import _select_data
 from functions.sazonalidade import plot_seasonality
 from functions.subseries import plot_subseries
+from functions.autocorrelacao import plot_autocorrelation
+
 from functions.preprocess import *
 from functions.linear import linear
 
 from assets.FiltrosExplorar.FiltroTemporal import _temporal
 from assets.FiltrosExplorar.FiltroSazonalidade import _sazonalidade
+from assets.FiltrosExplorar.FiltroAutocorrelacao import _autocorr
 
 from scipy import stats
 from scipy.optimize import curve_fit
@@ -53,7 +56,7 @@ layout = dbc.Container([
             
             dbc.Row(
                 dcc.Dropdown(
-                    ['Temporal','Sazonalidade','Sub-Séries','Multi-sazonalidade','Defasagens'],
+                    ['Temporal','Sazonalidade', 'Auto-Correlação','Sub-Séries','Multi-sazonalidade','Defasagens'],
                     value='Temporal',
                     id='plot_type',
                     persistence=True,
@@ -108,10 +111,10 @@ def filters_function(plot_type):
     if plot_type == 'Temporal':
         child =  _temporal
     elif plot_type == 'Sazonalidade':
-         child =  _sazonalidade
+        child =  _sazonalidade
+    elif plot_type == 'Auto-Correlação':
+        child = _autocorr
     return child
-
-n_global = 0
 
 @callback(
     Output(component_id='plot', component_property='children'),
@@ -124,21 +127,24 @@ n_global = 0
     Input(component_id='transformacoes_linear', component_property='value'),
     Input(component_id='box-cox_linear', component_property='value'),
     Input(component_id='eixo_sazonalidade', component_property='value'),
-    Input(component_id='agrupamento_sazonalidade', component_property='value')
-)
-def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = None, ano_linear = None, transformacao_linear = None, lambda_box_cox_linear = None, eixo_sazonalidade = None, agrupamento_sazonalidade = None):
+    Input(component_id='agrupamento_sazonalidade', component_property='value'),
+    Input(component_id='agrupamento_autocorr', component_property='value'),
+    Input(component_id='lags_autocorr', component_property='value'),
+    Input(component_id='pacf_autocorr', component_property='value')
 
+)
+def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = None, ano_linear = None, transformacao_linear = None, lambda_box_cox_linear = None, eixo_sazonalidade = None, agrupamento_sazonalidade = None, agrupamento_autocorr = None, lags_autocorr = None, par_pacf = None):
+    
+    sis = str(time.time_ns())[:11] 
     # Resolvendo bug tipo de dado
     if type(sub_base) == list:
         df = dataset[base_chosen][sub_base[0]]
     else:
         df = dataset[base_chosen][sub_base]
 
-    df = df.loc[df['DATA'].apply(lambda x: len(str(x))) > 8]
-    
-    sis = round(time.time_ns()/10000000000000000000, 9)
+    df = df.loc[df['DATA'].apply(lambda x: len(str(x))) > 8]    
 
-    if timestamp != None and sis == round((timestamp)/10000000000000, 9):
+    if timestamp != None and sis == str(timestamp+10)[:11]:
         # Cria figura
         if plot_type == 'Sazonalidade':
             if  eixo_sazonalidade == agrupamento_sazonalidade:
@@ -156,6 +162,10 @@ def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = 
 
         elif plot_type == 'Defasagens':
             pass
+        
+        elif plot_type == 'Auto-Correlação':
+            convert = {'PACF': True,'ACF': False}
+            return dcc.Graph(figure = plot_autocorrelation(df, agrupamento_autocorr, convert[par_pacf], int(lags_autocorr)))
 
 
 @callback(
