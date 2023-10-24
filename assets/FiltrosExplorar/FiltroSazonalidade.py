@@ -49,7 +49,7 @@ _sazonalidade = dbc.Container([
                                 ),
                             style={'text-align': 'center'}
                         )
-                    ], style={'border-right': '1px solid black'})
+                    ])
                 ]),
                 dbc.Row([
                     dbc.Col(
@@ -64,5 +64,15 @@ _sazonalidade = dbc.Container([
                     dbc.Col(
                         id= 'box-cox_linear'
                     ),
+                    dbc.Col(
+                        id= 'lags_autocorr'
+                    ),
+                    dbc.Col(
+                        id= 'agrupamento_autocorr'
+                    ),
+                    dbc.Col(
+                        id= 'pacf_autocorr'
+                    )
+                    
                 ])
             ])

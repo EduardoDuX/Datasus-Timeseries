@@ -38,7 +38,7 @@ _temporal = dbc.Container([
                         ),
                         dcc.Dropdown(
                         # filtro_ano,
-                        list(range(1996,1522)),
+                        list(range(1996,2022)),
                         value = [],
                         id='anos_linear',
                         persistence=True, 
@@ -93,6 +93,15 @@ _temporal = dbc.Container([
                     ),
                     dbc.Col(
                         id= 'agrupamento_sazonalidade'
+                    ),
+                    dbc.Col(
+                        id= 'lags_autocorr'
+                    ),
+                    dbc.Col(
+                        id= 'agrupamento_autocorr'
+                    ),
+                    dbc.Col(
+                        id= 'pacf_autocorr'
                     )
                 ], style={'background-color' : 'red'})
             ])
