@@ -3,6 +3,7 @@ from dash import html, dcc, callback, Input, Output, dash_table
 import dash_bootstrap_components as dbc
 from assets.data import dataset
 from assets.select_data import _select_data
+from assets.AnalisesDados.SIM_DOEXT import return_simdoext
 
 dash.register_page(__name__, name='Dados', title='DATASUS | Dados')
 
@@ -65,11 +66,19 @@ layout = dbc.Container([
                                                         page_size=11, 
                                                         style_table={'overflowX': 'auto'}), 
                                                         style={'border-radius': 25, 'padding':20, 'background-color': '#E0E1DD', 'color': '#E0E1DD'})
-        )
+        ),
+        
+        dbc.Row(
+            html.H3('Análise Exploratória dos Dados', style={'padding': 15, 'text-align': 'center'})
+        ),
+        
+        dbc.Row(dcc.Loading(id='explorar', type='circle'))
+        
     ], style={'background-color': '778DA9', 'min-width': '200px', 'min-height': '300px', 'padding':20, 'border-radius': '15px', 'margin-bottom': '20px'})
 
 ]),
 
+# Atualiza Textos
 @callback(
     Output(component_id='descricao_base', component_property='children'),
     Output(component_id='descricao_sub-base', component_property='children'),
@@ -93,11 +102,12 @@ def update_database(base, sub_base):
     desc_sub_base = None
     return desc_base, desc_sub_base
 
-
+# Atualiza Tabela e gráficos
 @callback(
     Output(component_id='data_table', component_property='data'),
     Output(component_id='registros_base', component_property='children'),
     Output(component_id='anos_base', component_property='children'),
+    Output(component_id='explorar', component_property='children'),
     Input(component_id='bases', component_property='value'),
     Input(component_id='dataset', component_property='value')
 )
@@ -111,4 +121,8 @@ def data_table(base_chosen, table):
     range_anos = html.P(f'Os anos variam entre {min(anos)}-{max(anos)}', style={'text-align': 'center'})
 
     tab = df.head().to_dict('records')
-    return tab, tam, range_anos
+    
+    grafico = None
+    if table == 'DOEXT':
+        grafico = return_simdoext(df)
+    return tab, tam, range_anos, grafico
