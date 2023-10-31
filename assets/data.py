@@ -4,17 +4,17 @@ import pandas as pd
 dataset = {
     'SINAN':
         {
-            'ZIKA': None,
-            'DENGUE': None,
-            'VIOL': None,
-            'ACGR': None
+            'ZIKA': pd.read_csv('./assets/Dados/SINAN-ZIKA.csv'),
+            # 'DENGUE': pd.read_csv('./assets/Dados/SINAN-DENG.csv'),
+            'VIOL': pd.read_csv('./assets/Dados/SINAN-VIOL.csv'),
+            'ACGR': pd.read_csv('./assets/Dados/SINAN-ACGR.csv')
         },
     'SIM': 
         {
-            'DO': None,
-            'DOMAT': None,
-            'DOFET': None,
-            'DOEXT': pd.read_csv('Datasus-Timeseries/assets/Dados/SIM-DOEXT.csv')
+            # 'DO': pd.read_csv('./assets/Dados/SIM-DO.csv'),
+            'DOMAT': pd.read_csv('./assets/Dados/SIM-DOMAT.csv'),
+            'DOFET': pd.read_csv('./assets/Dados/SIM-DOFET.csv'),
+            'DOEXT': pd.read_csv('./assets/Dados/SIM-DOEXT.csv')
         }
                 
 }

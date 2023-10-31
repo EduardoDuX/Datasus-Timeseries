@@ -28,7 +28,6 @@ def return_simdoext(sim_doext):
     # Quantidade de óbitos causados por acidentes de trabalho ao logo dos anos
     extract_year = lambda x: x.split('/')[0]
     sim_doext['ANOOBITO'] = sim_doext['DATA'].apply(extract_year)
-    sim_doext[['DATA', 'ANOOBITO']].head()
     accident_deaths_counts = sim_doext[sim_doext['ACIDENTE_TRABALHO'] == 'Sim'].value_counts(['ANOOBITO']).reset_index(name='QTD').sort_values(by=['ANOOBITO'])
     fig_qtd_acidente_ano = px.bar(accident_deaths_counts, x = 'ANOOBITO', y = 'QTD')
     fig_qtd_acidente_ano.update_xaxes(title_text = "Ano")

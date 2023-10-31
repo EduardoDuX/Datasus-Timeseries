@@ -4,6 +4,8 @@ import dash_bootstrap_components as dbc
 from assets.data import dataset
 from assets.select_data import _select_data
 from assets.AnalisesDados.SIM_DOEXT import return_simdoext
+from assets.AnalisesDados.SIM_DOMAT import return_simdomat
+from assets.AnalisesDados.SINAN_ZIKA import return_sinanzika
 
 dash.register_page(__name__, name='Dados', title='DATASUS | Dados')
 
@@ -22,13 +24,13 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Row([
             dbc.Col([
-                dbc.Row(html.H3(['Descrição Base']), style={'padding':20, 'text-align': 'center'}),
+                dbc.Row(html.H3(['Descrição Base']), style={'padding':20, 'text-align': 'center', 'color': 'white'}),
                 dbc.Row(
                 id='descricao_base'
                 )
             ]),
             dbc.Col([
-                dbc.Row(html.H3(['Descrição Sub-Base']), style={'padding':20, 'text-align': 'center'}),
+                dbc.Row(html.H3(['Descrição Sub-Base']), style={'padding':20, 'text-align': 'center', 'color': 'white'}),
                 dbc.Row(
                 id='descricao_sub-base'
                 )
@@ -88,15 +90,15 @@ layout = dbc.Container([
 def update_database(base, sub_base):
     if base == 'SIM':
         desc_base = html.Div([
-            html.H5('Sistema de Informação sobre a Mortalidade', style={'text-align': 'center'}),
+            html.H5('Sistema de Informação sobre a Mortalidade', style={'text-align': 'center', 'color': 'white'}),
             html.P('O SIM é responsável por coletar, armazenar e disponibilizar dados sobre óbitos ocorridos em todo território brasileiro. Ele registra diversas informações sobre a morte, como a data/hora e local do ocorrido, identificação e perfil socioeconômico do paciente, causa da morte, informações do Certificado de Morte e tipo de assistência médica recebida. Além disso, o sistema fornece dados sobre óbitos de crianças (neonatais e infantis) e informações sobre a mãe',
-            style={'text-align': 'justify'})
+            style={'text-align': 'justify', 'color': 'white'})
         ])
     else:
         desc_base = html.Div([
-            html.H5('Sistema de Informações de Agravos de Notificação', style={'text-align': 'center'}),
+            html.H5('Sistema de Informações de Agravos de Notificação', style={'text-align': 'center', 'color': 'white'}),
             html.P('O SINAN é o sistema responsável por registrar a ocorrências de doenças e agravos que constam da lista nacional de doenças de notificação compulsória desde 1979. Cada estado e município tem a liberdade de incluir outros problemas de saúde que sejam importantes para sua região. Os registros podem variar desde Doença de Chagas, Tétano à Violência Doméstica. Como cada doença ou agravo possui sua própria base de registro, os tipos de dados registrados podem variar muito, porém as bases tem suas semelhanças, como o registro de data de ocorrência, local de ocorrência e dados sobre o paciente.',
-            style={'text-align': 'justify'})
+            style={'text-align': 'justify', 'color': 'white'})
         ])
     
     desc_sub_base = None
@@ -125,4 +127,10 @@ def data_table(base_chosen, table):
     grafico = None
     if table == 'DOEXT':
         grafico = return_simdoext(df)
+    elif table == 'DOMAT':
+        grafico = return_simdomat(df)
+    elif table == 'ZIKA':
+        grafico = return_sinanzika(df)
+
+
     return tab, tam, range_anos, grafico
