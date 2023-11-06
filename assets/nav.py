@@ -19,7 +19,7 @@ default_style = {
 
 
 _nav = dbc.Container([
-	dbc.Row([dbc.Col([html.H1(['Análise Temporal Datasus'], className='app-brand', style={'margin-top': 25, 'margin-bottom': 15})], width = 3)
+	dbc.Row([dbc.Col([html.H1(['Análise Temporal Datasus'], className='app-brand', style={'margin-top': 25, 'margin-bottom': 15, 'color': 'white'})], width = 3)
 	]),
 	dbc.Row([
         dbc.Col([

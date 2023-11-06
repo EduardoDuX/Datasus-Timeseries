@@ -15,44 +15,35 @@ def return_sinanzika(sinan_zika):
     fig_ano.update_xaxes(title_text = "<b>Ano<b>")
     fig_ano.update_yaxes(title_text = "<b>Quantidade<b>")
 
+    # Gráfico de pizza
+    fig_pie = px.pie(sinan_zika, names='SEXO')
+
+    # Gráfico de barras empilhadas da distribuição dos casos notificados por sexo
+    casos_por_sexo = sinan_zika['SEXO'].groupby(sinan_zika['DATA']).value_counts().reset_index(name='QTD')
+
+    fig_sex = px.line(casos_por_sexo, x = 'DATA', y = 'QTD', color='SEXO')
+    fig_sex.update_xaxes(title_text = "Ano")
+    fig_sex.update_yaxes(title_text = "Quantidade")
+
+
 
     simdomat_analysis = dbc.Container([
         dbc.Row([
             dbc.Row([
                 dbc.Col([
                     dbc.Row(
-                        html.H4('Proporção de Óbitos Maternos por Raça/Cor', style={'text-align': 'center'})
+                        html.H4('Distribuição dos casos notificados por sexo', style={'text-align': 'center'})
                     ),
                     dbc.Row(
-                        # dcc.Graph(figure= fig_raca)
+                        dcc.Graph(figure= fig_pie)
                     )
                 ], style={'border-radius': '15px', 'background-color': '#BDC3C7', 'margin-bottom': '20px', 'margin-right': '20px', 'padding': 30}),
                 dbc.Col([
                     dbc.Row(
-                            html.H4('Quantidade de Óbitos Maternos por Raça/Cor', style={'text-align': 'center'})
+                            html.H4('Quantidade de casos de Zika notificados ao longo dos anos por sexo', style={'text-align': 'center'})
                         ),
                         dbc.Row(
-                            # dcc.Graph(figure= fig_bar)
-                        )
-                ], style={'border-radius': '15px', 'background-color': '#BDC3C7', 'margin-bottom': '20px', 'padding': 30})
-            ]),
-            
-            dbc.Row([
-                dbc.Col([
-                    dbc.Row(
-                            html.H4('Distribuição de Óbitos Maternos por Raça/Cor e por Ano no período 1996 a 2022', style={'text-align': 'center'})
-                        ),
-                        dbc.Row(
-                            # dcc.Graph(figure= fig_ano)
-                        )
-                ], style={'border-radius': '15px', 'background-color': '#BDC3C7', 'margin-bottom': '20px', 'margin-right': '20px', 'padding': 30}),
-                
-                dbc.Col([
-                    dbc.Row(
-                            html.H4('', style={'text-align': 'center'})
-                        ),
-                        dbc.Row(
-                            # dcc.Graph(figure= )
+                            dcc.Graph(figure= fig_sex)
                         )
                 ], style={'border-radius': '15px', 'background-color': '#BDC3C7', 'margin-bottom': '20px', 'padding': 30})
             ]),

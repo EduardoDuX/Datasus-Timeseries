@@ -6,6 +6,7 @@ from assets.select_data import _select_data
 from assets.AnalisesDados.SIM_DOEXT import return_simdoext
 from assets.AnalisesDados.SIM_DOMAT import return_simdomat
 from assets.AnalisesDados.SINAN_ZIKA import return_sinanzika
+from assets.AnalisesDados.SINAN_VIOL import return_sinanviol
 
 dash.register_page(__name__, name='Dados', title='DATASUS | Dados')
 
@@ -131,6 +132,8 @@ def data_table(base_chosen, table):
         grafico = return_simdomat(df)
     elif table == 'ZIKA':
         grafico = return_sinanzika(df)
+    elif table == 'VIOL':
+        grafico = return_sinanviol(df)
 
 
     return tab, tam, range_anos, grafico
