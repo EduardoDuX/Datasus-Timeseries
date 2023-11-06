@@ -13,7 +13,7 @@ from functions.linear import linear
 
 from assets.FiltrosExplorar.FiltroTemporal import _temporal
 from assets.FiltrosExplorar.FiltroSazonalidade import _sazonalidade
-from assets.FiltrosExplorar.FiltroAutocorrelacao import _autocorr
+# from assets.FiltrosExplorar.FiltroAutocorrelacao import _autocorr
 
 from scipy import stats
 from scipy.optimize import curve_fit
@@ -112,8 +112,8 @@ def filters_function(plot_type):
         child =  _temporal
     elif plot_type == 'Sazonalidade':
         child =  _sazonalidade
-    elif plot_type == 'Auto-Correlação':
-        child = _autocorr
+    # elif plot_type == 'Auto-Correlação':
+    #     child = _autocorr
     return child
 
 @callback(
@@ -125,15 +125,14 @@ def filters_function(plot_type):
     Input(component_id='agrupamento_linear', component_property='value'),
     Input(component_id='anos_linear', component_property='value'),
     Input(component_id='transformacoes_linear', component_property='value'),
-    Input(component_id='box-cox_linear', component_property='value'),
+    Input(component_id='param_linear', component_property='value'),
     Input(component_id='eixo_sazonalidade', component_property='value'),
     Input(component_id='agrupamento_sazonalidade', component_property='value'),
-    Input(component_id='agrupamento_autocorr', component_property='value'),
     Input(component_id='lags_autocorr', component_property='value'),
     Input(component_id='pacf_autocorr', component_property='value')
 
 )
-def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = None, ano_linear = None, transformacao_linear = None, lambda_box_cox_linear = None, eixo_sazonalidade = None, agrupamento_sazonalidade = None, agrupamento_autocorr = None, lags_autocorr = None, par_pacf = None):
+def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = None, ano_linear = None, transformacao_linear = None, lambda_box_cox_linear = None, eixo_sazonalidade = None, agrupamento_sazonalidade = None, lags_autocorr = None, par_pacf = None):
     
     sis = str(time.time_ns())[:11] 
     # Resolvendo bug tipo de dado
@@ -152,7 +151,13 @@ def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = 
             return dcc.Graph(figure = plot_seasonality(df,eixo_sazonalidade, agrupamento_sazonalidade))
         
         elif plot_type == 'Temporal':
-            return dcc.Graph(figure = linear(df, base_chosen, ano_linear, agrupamento_linear, transformacao_linear, lambda_box_cox_linear))
+            convert = {'PACF': True,'ACF': False, None: None}
+            par_pacf = convert[par_pacf]
+            if lags_autocorr != None:
+                lags_autocorr = int(lags_autocorr)
+            print('test')
+            
+            return dcc.Graph(figure = linear(df, base_chosen, ano_linear, agrupamento_linear, transformacao_linear, lambda_box_cox_linear, par_pacf, lags_autocorr))
         
         elif plot_type == 'Sub-Séries':
             pass
@@ -163,17 +168,8 @@ def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = 
         elif plot_type == 'Defasagens':
             pass
         
-        elif plot_type == 'Auto-Correlação':
-            convert = {'PACF': True,'ACF': False}
-            return dcc.Graph(figure = plot_autocorrelation(df, agrupamento_autocorr, convert[par_pacf], int(lags_autocorr)))
+        # elif plot_type == 'Auto-Correlação':
+        #     convert = {'PACF': True,'ACF': False}
+        #     return dcc.Graph(figure = plot_autocorrelation(df, agrupamento_autocorr, convert[par_pacf], int(lags_autocorr)))
 
 
-@callback(
-    Output(component_id='box-cox_linear', component_property='disabled'),
-    Input(component_id='transformacoes_linear', component_property='value')
-)
-def input_activation(transformacao):
-    if transformacao == 'Box-Cox' or transformacao == 'Média Móvel':
-        return False
-    else:
-        return True

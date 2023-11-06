@@ -75,7 +75,7 @@ _autocorr = dbc.Container([
             id= 'transformacoes_linear'
         ),
         dbc.Col(
-            id= 'box-cox_linear'
+            id= 'param_linear'
         ),
         dbc.Col(
             id= 'parametro_linear'
