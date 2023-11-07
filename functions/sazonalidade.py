@@ -13,7 +13,7 @@ def plot_seasonality(df, x, agrupamento):
     if 'Ano' in (x, agrupamento):
         df_season['Ano'] = df_season['DATA'].apply(lambda y: str(y)[:4])
 
-    df_season = df_season[[x, agrupamento, 'Unnamed: 0']].groupby([x, agrupamento]).sum().reset_index().rename(columns={'Unnamed: 0': 'Casos'})
+    df_season = df_season[[x, agrupamento, 'ID']].groupby([x, agrupamento]).sum().reset_index().rename(columns={'ID': 'Casos'})
 
     df_season.sort_values(by=x)
     

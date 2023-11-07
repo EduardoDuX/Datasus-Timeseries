@@ -6,7 +6,7 @@ from functions.preprocess import *
 
 def plot_autocorrelation(dataframe, agrupamento_autocorr, plot_pacf=False, lags=None):
     
-    df_agrupado = preprocess_SIM(dataframe, agrupamento_autocorr)
+    df_agrupado = preprocess(dataframe, agrupamento_autocorr)
     df_agrupado = df_agrupado['Casos'] 
     corr_array = pacf(df_agrupado.dropna(), alpha=0.05, nlags=lags) if plot_pacf else acf(df_agrupado.dropna(), alpha=0.05, nlags=lags)
     lower_y = corr_array[1][:,0] - corr_array[0]

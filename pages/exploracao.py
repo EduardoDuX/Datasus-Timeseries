@@ -13,7 +13,6 @@ from functions.linear import linear
 
 from assets.FiltrosExplorar.FiltroTemporal import _temporal
 from assets.FiltrosExplorar.FiltroSazonalidade import _sazonalidade
-# from assets.FiltrosExplorar.FiltroAutocorrelacao import _autocorr
 
 from scipy import stats
 from scipy.optimize import curve_fit
@@ -56,7 +55,7 @@ layout = dbc.Container([
             
             dbc.Row(
                 dcc.Dropdown(
-                    ['Temporal','Sazonalidade', 'Auto-Correlação','Sub-Séries','Multi-sazonalidade','Defasagens'],
+                    ['Temporal','Sazonalidade','Sub-Séries','Multi-sazonalidade','Defasagens'],
                     value='Temporal',
                     id='plot_type',
                     persistence=True,
@@ -112,8 +111,6 @@ def filters_function(plot_type):
         child =  _temporal
     elif plot_type == 'Sazonalidade':
         child =  _sazonalidade
-    # elif plot_type == 'Auto-Correlação':
-    #     child = _autocorr
     return child
 
 @callback(
@@ -155,7 +152,6 @@ def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = 
             par_pacf = convert[par_pacf]
             if lags_autocorr != None:
                 lags_autocorr = int(lags_autocorr)
-            print('test')
             
             return dcc.Graph(figure = linear(df, base_chosen, ano_linear, agrupamento_linear, transformacao_linear, lambda_box_cox_linear, par_pacf, lags_autocorr))
         
@@ -167,9 +163,3 @@ def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = 
 
         elif plot_type == 'Defasagens':
             pass
-        
-        # elif plot_type == 'Auto-Correlação':
-        #     convert = {'PACF': True,'ACF': False}
-        #     return dcc.Graph(figure = plot_autocorrelation(df, agrupamento_autocorr, convert[par_pacf], int(lags_autocorr)))
-
-
