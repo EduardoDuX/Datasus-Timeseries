@@ -10,7 +10,7 @@ from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.stattools import acf, pacf
 import plotly.graph_objects as go
 from functions.preprocess import *
-
+from statsmodels.tsa.arima_process import ArmaProcess
 
 class SeriesAnalysis:
     def plot_series(self, xaxis, yaxis, xlabel, ylabel, title, figsize=(15, 4)):
@@ -67,20 +67,30 @@ class SeriesAnalysis:
 
         return stacionary_series, results[1]
 
-    def plot_autocorrelation(self, dataframe, plot_pacf=False, lags=None):
+    def plot_autocorrelation(self, dataframe, beta_sample, plot_pacf=False, lags=None):
         dataframe = dataframe['Casos'] 
         corr_array = pacf(dataframe.dropna(), alpha=0.05, nlags=lags) if plot_pacf else acf(dataframe.dropna(), alpha=0.05, nlags=lags)
         lower_y = corr_array[1][:,0] - corr_array[0]
         upper_y = corr_array[1][:,1] - corr_array[0]
 
+        tam = 10 if beta_sample is not None else 2
+
         fig = go.Figure()
-        [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='#3f3f3f') 
+        [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='#3f3f3f', line={'width': tam}) 
         for x in range(len(corr_array[0]))]
         fig.add_scatter(x=np.arange(len(corr_array[0])), y=corr_array[0], mode='markers', marker_color='#1f77b4',
                     marker_size=12)
         fig.add_scatter(x=np.arange(len(corr_array[0])), y=upper_y, mode='lines', line_color='rgba(255,255,255,0)')
         fig.add_scatter(x=np.arange(len(corr_array[0])), y=lower_y, mode='lines',fillcolor='rgba(32, 146, 230,0.3)',
                 fill='tonexty', line_color='rgba(255,255,255,0)')
+        
+        if beta_sample is not None:
+            corr_array = pacf(beta_sample, alpha=0.05, nlags=lags) if plot_pacf else acf(beta_sample, alpha=0.05, nlags=lags)
+            [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='red') 
+            for x in range(len(corr_array[0]))]
+
+
+
         fig.update_traces(showlegend=False)
         fig.update_xaxes(range=[-1,lags+1])
         fig.update_yaxes(zerolinecolor='#000000')
@@ -88,3 +98,11 @@ class SeriesAnalysis:
         title='Partial Autocorrelation (PACF)' if plot_pacf else 'Autocorrelation (ACF)'
         fig.update_layout(title=title)
         return fig
+    
+
+    def medias_moveis_betas(self, betas, nsample):
+        ar1 = np.array([1])
+        ma1 = np.array([1, *betas])
+        model = ArmaProcess(ar1, ma1)
+        sample = model.generate_sample(nsample=nsample)
+        return sample
