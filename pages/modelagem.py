@@ -9,6 +9,7 @@ from assets.FiltrosExplorar.FiltroAutocorrelacao import _autocorr
 from scripts.series_analysis import SeriesAnalysis
 import time
 from functions.preprocess import *
+import numpy as np
 
 dash.register_page(__name__, name='Modelagem', title='DATASUS | Modelagem')
 
@@ -46,49 +47,19 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col([
                         dbc.Row(
-                            html.H4('Beta 1',
+                            html.H4('Betas',
                             style={'padding':15}
                             ),
                             style={'text-align': 'center'}
                         ),
                         dbc.Input(
-                            id='beta1',
+                            id='betas',
                             type='text',
-                            value= 0,
-                            placeholder = 'Selecionar Beta 1',
-                            style = {'margin-bottom': '10px'}
-                        )
-                    ], style={'border-right': '1px solid black'}),
-        dbc.Col([
-                        dbc.Row(
-                            html.H4('Beta 2',
-                            style={'padding':15}
-                            ),
-                            style={'text-align': 'center'}
-                        ),
-                        dbc.Input(
-                            id='beta2',
-                            type='text',
-                            value= 0,
-                            placeholder = 'Selecionar Beta 2',
-                            style = {'margin-bottom': '10px'}
-                        )
-                    ], style={'border-right': '1px solid black'}),
-        dbc.Col([
-                        dbc.Row(
-                            html.H4('Beta 3',
-                            style={'padding':15}
-                            ),
-                            style={'text-align': 'center'}
-                        ),
-                        dbc.Input(
-                            id='beta3',
-                            type='text',
-                            value= 0,
-                            placeholder = 'Selecionar Beta 3',
+                            placeholder = 'Inserir betas no formato: B1; B2; B3; ...',
                             style = {'margin-bottom': '10px'}
                         )
                     ])
+        
     ], style={'background-color':'#C2C8CC', 'border-bottom': '1px solid black'}),
 
         dbc.Row([
@@ -123,27 +94,25 @@ layout = dbc.Container([
     Input(component_id='agrupamento_autocorr', component_property='value'),
     Input(component_id='lags_autocorr', component_property='value'),
     Input(component_id='pacf_autocorr', component_property='value'),
-    Input(component_id='beta1', component_property='value'),
-    Input(component_id='beta2', component_property='value'),
-    Input(component_id='beta3', component_property='value'),
+    Input(component_id='betas', component_property='value'),
 )
 
-def medias_moveis(timestamp, base_chosen, sub_base, agrupamento, lags, pacf, beta1, beta2, beta3):
+def medias_moveis(timestamp, base_chosen, sub_base, agrupamento, lags, pacf, betas):
     
     sis = str(time.time_ns())[:11] 
     if timestamp != None and sis == str(timestamp+10)[:11]:
         lags = int(lags)
-        beta1 = float(beta1)
-        beta2 = float(beta2)
-        beta3 = float(beta3)
+        # beta1 = float(beta1)
+        # beta2 = float(beta2)
+        # beta3 = float(beta3)
+        sample = None
 
         df = dataset[base_chosen][sub_base]
         df = preprocess(df, agrupamento)
 
         series_analysis = SeriesAnalysis()
-        if beta1 == 0 and beta2 == 0 and beta3 == 0:
-            sample = None
-        else:
-            sample = series_analysis.medias_moveis_betas([beta1, beta2, beta3], nsample=df.shape[0])
+        if betas:
+            betas = list(map(float, betas.split(';')))
+            sample = series_analysis.medias_moveis_betas(betas, nsample=df.shape[0])
         im = series_analysis.plot_autocorrelation(df, sample, pacf, lags)
         return dcc.Graph(figure = im)
