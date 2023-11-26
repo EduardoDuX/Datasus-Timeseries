@@ -22,7 +22,7 @@ n_global = 0
 layout = dbc.Container([
     # Titulo
     dbc.Row([
-        dbc.Col(html.H2(['Exploração dos dados']),
+        dbc.Col(html.H2(['Modelagem dos dados']),
                 style={'padding':20})
     ]),
 
@@ -47,7 +47,7 @@ layout = dbc.Container([
 
         dbc.Row([
             dbc.Row(
-                html.H4('Gerar Gráfico',
+                html.H4('Gerar Gráfico (série estacionária)',
                 style={'padding':15, 'text-align': 'center'})
             ),
 
@@ -60,10 +60,17 @@ layout = dbc.Container([
     
 
     dbc.Row(
-        
         # Grafico
         dcc.Loading(
             id='plot_model',
+            type='circle'
+        ),
+        style={'margin-top': '30px', 'margin-bottom': '50px'}
+    ),
+    dbc.Row(
+        # Análise
+        dcc.Loading(
+            id='analisys_model',
             type='circle'
         ),
         style={'margin-top': '30px', 'margin-bottom': '50px'}
@@ -94,7 +101,35 @@ def medias_moveis(timestamp, base_chosen, sub_base, agrupamento, lags, pacf):
         convert = {'PACF': True,'ACF': False, None: None}
         pacf = convert[pacf]
         
-        df['Casos'], pvalor = series_analysis.stacionary_series(df[agrupamento], df['Casos'])
-        print(pvalor)
-        im = series_analysis.plot_autocorrelation(df, None, pacf, lags)
+        df['Casos'], _ = series_analysis.stacionary_series(df[agrupamento], df['Casos'])
+        im, q = series_analysis.plot_autocorrelation(df, None, pacf, lags)
+        im.add_annotation(x=0, y=1.08,
+            text=f"Analisando {lags} lags, o modelo sugerido para médias móveis é o MA({q}).",
+            showarrow=False,
+            bordercolor="#c7c7c7",
+            xref="paper", yref="paper",
+            borderwidth=2,
+            borderpad=4,
+            font=dict(
+            family="Courier New, monospace",
+            size=16,
+            color="#ffffff"
+            ),
+            bgcolor="#1B263B",
+            opacity=0.8)
+        im.add_annotation(x=0, y=-0.3,
+            text=f"Caso o valor de q seja próximo do número de lags analisados, recomendamos analisar mais lags.",
+            showarrow=False,
+            bordercolor="#c7c7c7",
+            xref="paper", yref="paper",
+            borderwidth=2,
+            borderpad=4,
+            font=dict(
+            family="Courier New, monospace",
+            size=16,
+            color="#ffffff"
+            ),
+            bgcolor="#1B263B",
+            opacity=0.8)
+
         return dcc.Graph(figure = im)

@@ -50,7 +50,8 @@ def linear(df, base_chosen, ano, agrupamento, transformacao, lambda_box_cox, plo
             df_process['Casos'] = x
             
         elif transformacao == 'Autocorrelação':
-            return series_analysis.plot_autocorrelation(df_process, None, plot_pacf, lags)
+            fig, _ = series_analysis.plot_autocorrelation(df_process, None, plot_pacf, lags)
+            return fig
                 
                 
     return px.line(data_frame=df_process, x=agrupamento, y='Casos', title=f'Gráfico por tempo')

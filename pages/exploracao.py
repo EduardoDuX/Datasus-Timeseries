@@ -55,7 +55,7 @@ layout = dbc.Container([
             
             dbc.Row(
                 dcc.Dropdown(
-                    ['Temporal','Sazonalidade','Sub-Séries','Multi-sazonalidade','Defasagens'],
+                    ['Temporal','Sazonalidade'],
                     value='Temporal',
                     id='plot_type',
                     persistence=True,
@@ -154,12 +154,3 @@ def data_plot(timestamp, base_chosen, sub_base, plot_type, agrupamento_linear = 
                 lags_autocorr = int(lags_autocorr)
             
             return dcc.Graph(figure = linear(df, base_chosen, ano_linear, agrupamento_linear, transformacao_linear, lambda_box_cox_linear, par_pacf, lags_autocorr))
-        
-        elif plot_type == 'Sub-Séries':
-            pass
-
-        elif plot_type == 'Multi-sazonalidade':
-            pass
-
-        elif plot_type == 'Defasagens':
-            pass

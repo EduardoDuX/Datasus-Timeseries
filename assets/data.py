@@ -13,7 +13,7 @@ dataset = {
         {
             # 'DO': pd.read_csv('./assets/Dados/SIM-DO.csv'),
             'DOMAT': pd.read_csv('./assets/Dados/SIM-DOMAT.csv'),
-            'DOFET': pd.read_csv('./assets/Dados/SIM-DOFET.csv'),
+            'DOFET': pd.read_csv('./assets/Dados/SIM-DOFET.csv',low_memory=False),
             'DOEXT': pd.read_csv('./assets/Dados/SIM-DOEXT.csv')
         }
                 

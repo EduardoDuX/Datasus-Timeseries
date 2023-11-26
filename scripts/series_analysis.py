@@ -73,9 +73,7 @@ class SeriesAnalysis:
         lower_y = corr_array[1][:,0] - corr_array[0]
         upper_y = corr_array[1][:,1] - corr_array[0]
 
-        # print(beta_sample)
         tam = 2
-        # tam = 10 if beta_sample is not None else 2
 
         fig = go.Figure()
         [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='#3f3f3f', line={'width': tam}) 
@@ -85,13 +83,6 @@ class SeriesAnalysis:
         fig.add_scatter(x=np.arange(len(corr_array[0])), y=upper_y, mode='lines', line_color='rgba(255,255,255,0)')
         fig.add_scatter(x=np.arange(len(corr_array[0])), y=lower_y, mode='lines',fillcolor='rgba(32, 146, 230,0.3)',
                 fill='tonexty', line_color='rgba(255,255,255,0)')
-        
-        # if beta_sample is not None:
-        #     corr_array = pacf(beta_sample, alpha=0.05, nlags=lags) if plot_pacf else acf(beta_sample, alpha=0.05, nlags=lags)
-        #     [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='red') 
-        #     for x in range(len(corr_array[0]))]
-
-
 
         fig.update_traces(showlegend=False)
         fig.update_xaxes(range=[-1,lags+1])
@@ -99,7 +90,16 @@ class SeriesAnalysis:
         
         title='Partial Autocorrelation (PACF)' if plot_pacf else 'Autocorrelation (ACF)'
         fig.update_layout(title=title)
-        return fig
+
+        corr_array = corr_array[0]
+        # Estimando modelo
+        q = 0
+        for i in reversed(range(len(corr_array))):
+             if corr_array[i] < lower_y[i] or corr_array[i] > upper_y[i]:
+                 q = i
+                 break
+
+        return fig , q
     
 
     def medias_moveis_betas(self, betas, nsample):

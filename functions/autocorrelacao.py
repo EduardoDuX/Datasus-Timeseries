@@ -26,4 +26,5 @@ def plot_autocorrelation(dataframe, agrupamento_autocorr, plot_pacf=False, lags=
     
     title='Partial Autocorrelation (PACF)' if plot_pacf else 'Autocorrelation (ACF)'
     fig.update_layout(title=title)
+    print(corr_array)
     return fig
