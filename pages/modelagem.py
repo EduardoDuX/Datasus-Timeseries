@@ -44,23 +44,6 @@ layout = dbc.Container([
                 _autocorr,
             )
         ], style={'background-color':'#C2C8CC', 'border-top-left-radius': '10px','border-top-right-radius': '10px', 'margin-top': '15px','border-bottom': '1px solid black'}),
-    dbc.Row([
-        dbc.Col([
-                        dbc.Row(
-                            html.H4('Betas',
-                            style={'padding':15}
-                            ),
-                            style={'text-align': 'center'}
-                        ),
-                        dbc.Input(
-                            id='betas',
-                            type='text',
-                            placeholder = 'Inserir betas no formato: B1; B2; B3; ...',
-                            style = {'margin-bottom': '10px'}
-                        )
-                    ])
-        
-    ], style={'background-color':'#C2C8CC', 'border-bottom': '1px solid black'}),
 
         dbc.Row([
             dbc.Row(
@@ -77,6 +60,7 @@ layout = dbc.Container([
     
 
     dbc.Row(
+        
         # Grafico
         dcc.Loading(
             id='plot_model',
@@ -93,26 +77,24 @@ layout = dbc.Container([
     Input(component_id='dataset', component_property='value'),
     Input(component_id='agrupamento_autocorr', component_property='value'),
     Input(component_id='lags_autocorr', component_property='value'),
-    Input(component_id='pacf_autocorr', component_property='value'),
-    Input(component_id='betas', component_property='value'),
+    Input(component_id='pacf_autocorr', component_property='value')
 )
 
-def medias_moveis(timestamp, base_chosen, sub_base, agrupamento, lags, pacf, betas):
-    
+def medias_moveis(timestamp, base_chosen, sub_base, agrupamento, lags, pacf):
+    # print(transformacoes)
     sis = str(time.time_ns())[:11] 
     if timestamp != None and sis == str(timestamp+10)[:11]:
         lags = int(lags)
-        # beta1 = float(beta1)
-        # beta2 = float(beta2)
-        # beta3 = float(beta3)
-        sample = None
+        # sample = None
 
         df = dataset[base_chosen][sub_base]
         df = preprocess(df, agrupamento)
 
         series_analysis = SeriesAnalysis()
-        if betas:
-            betas = list(map(float, betas.split(';')))
-            sample = series_analysis.medias_moveis_betas(betas, nsample=df.shape[0])
-        im = series_analysis.plot_autocorrelation(df, sample, pacf, lags)
+        convert = {'PACF': True,'ACF': False, None: None}
+        pacf = convert[pacf]
+        
+        df['Casos'], pvalor = series_analysis.stacionary_series(df[agrupamento], df['Casos'])
+        print(pvalor)
+        im = series_analysis.plot_autocorrelation(df, None, pacf, lags)
         return dcc.Graph(figure = im)

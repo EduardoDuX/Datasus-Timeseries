@@ -73,7 +73,9 @@ class SeriesAnalysis:
         lower_y = corr_array[1][:,0] - corr_array[0]
         upper_y = corr_array[1][:,1] - corr_array[0]
 
-        tam = 10 if beta_sample is not None else 2
+        # print(beta_sample)
+        tam = 2
+        # tam = 10 if beta_sample is not None else 2
 
         fig = go.Figure()
         [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='#3f3f3f', line={'width': tam}) 
@@ -84,10 +86,10 @@ class SeriesAnalysis:
         fig.add_scatter(x=np.arange(len(corr_array[0])), y=lower_y, mode='lines',fillcolor='rgba(32, 146, 230,0.3)',
                 fill='tonexty', line_color='rgba(255,255,255,0)')
         
-        if beta_sample is not None:
-            corr_array = pacf(beta_sample, alpha=0.05, nlags=lags) if plot_pacf else acf(beta_sample, alpha=0.05, nlags=lags)
-            [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='red') 
-            for x in range(len(corr_array[0]))]
+        # if beta_sample is not None:
+        #     corr_array = pacf(beta_sample, alpha=0.05, nlags=lags) if plot_pacf else acf(beta_sample, alpha=0.05, nlags=lags)
+        #     [fig.add_scatter(x=(x,x), y=(0,corr_array[0][x]), mode='lines',line_color='red') 
+        #     for x in range(len(corr_array[0]))]
 
 
 

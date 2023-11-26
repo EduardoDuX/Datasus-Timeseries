@@ -1,6 +1,6 @@
 def preprocess(df, agrupamento):
     df2 = df.copy()
-        
+    df2['DATA'] = df2['DATA'].astype(str)
     if agrupamento == 'Anual':
         df2[agrupamento] = df2['DATA'].apply(lambda x: x[:4])
     elif agrupamento == 'Mensal':
