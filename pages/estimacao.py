@@ -118,7 +118,7 @@ def modelo(timestamp, base_chosen, sub_base, agrupamento, lags, pacf):
             bgcolor="#1B263B",
             opacity=0.8)
         im.add_annotation(x=0, y=-0.1,
-            text=f"Caso o valor de q seja próximo do número de lags analisados, recomendamos analisar mais lags.",
+            text=f"Caso um dos valores sugeridos seja próximo do número de lags analisados, recomendamos analisar mais lags.",
             showarrow=False,
             bordercolor="#c7c7c7",
             xref="paper", yref="paper",
