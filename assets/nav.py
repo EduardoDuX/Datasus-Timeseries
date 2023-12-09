@@ -73,8 +73,7 @@ def secondary_menu(n_clicks_timestamp1, n_clicks_timestamp2):
                     dbc.NavLink('Exploração', href='/exploracao', style= default_style, id= 'exploracao'),
                     # dbc.NavLink('Correlações', href='/correlacao', style= default_style, id= 'correlacoes'),
                     dbc.NavLink('Estimação', href='/estimacao', style= default_style, id= 'estimacao'),
-                    dbc.NavLink('Diagnóstico', href='/diagnostico', style= default_style, id= 'diagnostico'),
-                    dbc.NavLink('Predição', href='/predicao', style= default_style, id= 'predicao')
+                    dbc.NavLink('Diagnóstico', href='/diagnostico', style= default_style, id= 'diagnostico')
                 ],
                 vertical=True, pills=True, class_name='my-nav3', horizontal='center')
         data = menu_style
@@ -116,30 +115,26 @@ def style_home_adjust(home = None, dados = None):
     # Output(component_id='correlacoes', component_property='style'),
     Output(component_id='estimacao', component_property='style'),
     Output(component_id='diagnostico', component_property='style'),
-    Output(component_id='predicao', component_property='style'),
     Input(component_id='exploracao', component_property='n_clicks_timestamp'),
     # Input(component_id='correlacoes', component_property='n_clicks_timestamp'),
     Input(component_id='modelagem', component_property='n_clicks_timestamp'),
-    Input(component_id='diagnostico', component_property='n_clicks_timestamp'),
-    Input(component_id='predicao', component_property='n_clicks_timestamp')
+    Input(component_id='diagnostico', component_property='n_clicks_timestamp')
 )
 
-def style_analise_adjust(exploracao = None, correlacoes = None, estimacao = None, diagnostico = None, predicao = None):
+def style_analise_adjust(exploracao = None, correlacoes = None, estimacao = None, diagnostico = None):
 
     timestamps = {
         'exploracao': exploracao,
         # 'correlacoes': correlacoes,
         'estimacao': estimacao,
-        'diagnostico': diagnostico,
-        'predicao': predicao
+        'diagnostico': diagnostico
     }
     
     styles = {
         'exploracao': default_style,
         # 'correlacoes': default_style,
         'modelagem': default_style,
-        'diagnostico': default_style,
-        'predicao': default_style
+        'diagnostico': default_style
     }
     
     for times in timestamps.keys():

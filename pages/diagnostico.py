@@ -12,6 +12,7 @@ import time
 from functions.preprocess import *
 from statsmodels.graphics.api import qqplot
 import numpy as np
+import plotly.express as px
 
 dash.register_page(__name__, name='Diagnóstico', title='DATASUS | Diagnóstico')
 
@@ -36,11 +37,10 @@ layout = dbc.Container([
         ),   
         
     ],style={'background-color':'#BDC3C7', 'border-radius': '10px'}),
-    
-    # Filtros e gráfico 
 
+    
+    # Filtros
     dbc.Row([
-        # Grafico
         dbc.Col(
                 _diag,
             )
@@ -59,15 +59,25 @@ layout = dbc.Container([
         ], justify = 'center',
         style={'background-color':'#C2C8CC', 'border-bottom-left-radius': '10px','border-bottom-right-radius': '10px'}),
     
+    dbc.Row(
+        # Grafico de residuos
+        dcc.Loading(
+            id='plot_resid',
+            type='circle'
+        ),
+        style={'margin-top': '30px', 'margin-bottom': '50px'}
+    ),
+
 
     dbc.Row(
-        # Grafico
+        # Grafico QQ-plot
         dcc.Loading(
             id='plot_diag',
             type='circle'
         ),
         style={'margin-top': '30px', 'margin-bottom': '50px'}
     ),
+
     dbc.Row(
         # Análise
         dcc.Loading(
@@ -131,15 +141,59 @@ def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
 
         })
 
-
         fig['layout'].update({
-            'title': 'Gráfico de resíduos',
+            'title': 'QQ-plot dos resíduos',
             'xaxis': {
                 'title': 'Quantis Teóricos',
                 'zeroline': False
             },
             'yaxis': {
                 'title': 'Quantis da amostra'
+            },
+            'showlegend': False
+        })
+
+        return dcc.Graph(figure = fig)
+    
+@callback(
+    Output(component_id='plot_resid', component_property='children'),
+    Input(component_id='graph_gen', component_property='n_clicks_timestamp'),
+    Input(component_id='bases', component_property='value'),
+    Input(component_id='dataset', component_property='value'),
+    Input(component_id='agrupamento_diag', component_property='value'),
+    Input(component_id='q', component_property='value'),
+    Input(component_id='p', component_property='value')
+)
+def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
+    # print(transformacoes)
+    sis = str(time.time_ns())[:11] 
+    if timestamp != None and sis == str(timestamp+10)[:11]:
+        q = int(q)
+        p = int(p)
+
+
+        df = dataset[base_chosen][sub_base]
+        df = preprocess(df, agrupamento)
+
+        series_analysis = SeriesAnalysis()
+        df['Casos'], _ = series_analysis.stacionary_series(df[agrupamento], df['Casos'])
+        df = df[['Casos',agrupamento]]
+        df.index.freq = df[agrupamento]
+        del df[agrupamento]
+        arma_mod = ARIMA(df, order=(p, 0, q)).fit()
+        resid = arma_mod.resid
+
+        df['residuos'] = resid
+
+        fig = px.line(df, x=df.index.freq, y="residuos")
+        fig['layout'].update({
+            'title': 'Gráfico de resíduos',
+            'xaxis': {
+                'title': 'Anos',
+                'zeroline': False
+            },
+            'yaxis': {
+                'title': 'Resíduos'
             },
             'showlegend': False
         })
