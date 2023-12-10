@@ -8,6 +8,7 @@ from assets.AnalisesDados.SIM_DOMAT import return_simdomat
 from assets.AnalisesDados.SINAN_ZIKA import return_sinanzika
 from assets.AnalisesDados.SINAN_VIOL import return_sinanviol
 from assets.AnalisesDados.SIM_DOFET import return_simdofet
+from assets.AnalisesDados.SINAN_ACGR import return_sinanacgr
 
 dash.register_page(__name__, name='Dados', title='DATASUS | Dados')
 
@@ -184,5 +185,7 @@ def data_table(base_chosen, table):
         grafico = return_sinanviol(df)
     elif table == 'DOFET':
         grafico = return_simdofet(df)
+    elif table == 'ACGR':
+        grafico = return_sinanacgr(df)
 
     return tab, tam, range_anos, grafico

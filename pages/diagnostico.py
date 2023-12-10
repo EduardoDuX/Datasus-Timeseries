@@ -13,7 +13,7 @@ from functions.preprocess import *
 from statsmodels.graphics.api import qqplot
 import numpy as np
 import plotly.express as px
-
+import statsmodels.api as sm
 dash.register_page(__name__, name='Diagnóstico', title='DATASUS | Diagnóstico')
 
 filtro_ano = ['Todos']
@@ -116,7 +116,9 @@ def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
         arma_mod = ARIMA(df, order=(p, 0, q)).fit()
         resid = arma_mod.resid
 
-        qqplot_data = qqplot(resid, line='q').gca().lines
+        resid_sem_nan = resid[np.logical_not(np.isnan(resid))]
+
+        qqplot_data = qqplot(resid_sem_nan, line='q', fit=True).gca().lines
 
         fig = go.Figure()
 
@@ -153,6 +155,7 @@ def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
             'showlegend': False
         })
 
+
         return dcc.Graph(figure = fig)
     
 @callback(
@@ -165,7 +168,6 @@ def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
     Input(component_id='p', component_property='value')
 )
 def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
-    # print(transformacoes)
     sis = str(time.time_ns())[:11] 
     if timestamp != None and sis == str(timestamp+10)[:11]:
         q = int(q)
@@ -185,6 +187,8 @@ def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
 
         df['residuos'] = resid
 
+        resid_sem_nan = resid[np.logical_not(np.isnan(resid))]
+
         fig = px.line(df, x=df.index.freq, y="residuos")
         fig['layout'].update({
             'title': 'Gráfico de resíduos',
@@ -197,5 +201,20 @@ def diagnostico(timestamp, base_chosen, sub_base, agrupamento, q, p):
             },
             'showlegend': False
         })
+
+        fig.add_annotation(x=0, y=1.08,
+            text=f"O valor da estatística de Durbin Watson para o modelo é {round(sm.stats.durbin_watson(resid_sem_nan),2)}",
+            showarrow=False,
+            bordercolor="#c7c7c7",
+            xref="paper", yref="paper",
+            borderwidth=2,
+            borderpad=4,
+            font=dict(
+            family="Courier New, monospace",
+            size=16,
+            color="#ffffff"
+            ),
+            bgcolor="#1B263B",
+            opacity=0.8)
 
         return dcc.Graph(figure = fig)
