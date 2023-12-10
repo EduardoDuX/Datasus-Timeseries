@@ -67,10 +67,10 @@ _temporal = dbc.Container([
                             style = {'margin-bottom': '10px'}
                         ),
                         
-                    ], style={'border-right': '1px solid black'}),
+                    ]),
                     
                     
-                ], style = {'border-bottom': '1px solid black'}),
+                ]),
                 
                 dbc.Row(
                         id = 'extra_param'
